@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+
+</head>
+<body>
+	文章名字：<input type="text" id="name1"><br />
+	文章内容：<input type="text" id="con"><bt />
+	<button id="btn">发布</button>
+	<h1>文章名字</h1>
+	<ol id="list"></ol>
+
+
+	<script type="text/javascript">
+			ajax({
+				url:'http://localhost:8005',
+				type:'post',
+				success:function(data){
+					var json=JSON.parse(data)
+					var str="";
+					for(i in json){
+						str+="<li><a href='ccc.html?"+json[i]+"'>"+i+"</a></li>"
+					}
+					list.innerHTML=str;
+				},
+				error:function(){
+					console.log("服务器错误")
+				}
+			})
+		btn.onclick = function(){
+			ajax({
+				url:'http://localhost:8005',
+				type:'post',
+				data:{
+					user:name1.value,
+					pass:con.value
+				},
+				success:function(data){
+					var json=JSON.parse(data)
+					var str="";
+					for(i in json){
+						str+="<li><a href='ccc.html?"+json[i]+"'>"+i+"</a></li>";
+					}
+					list.innerHTML=str
+				},
+				error:function(){
+					console.log("服务器错误")
+				}
+			})
+		}
+			
+	
+function ajax (option){
+	var xhr = new XMLHttpRequest();
+
+	var arr= []
+	for(var i in option.data){
+		arr.push(i+'='+option.data[i])
+	}
+	 var str = '';
+	 str=arr.join('&')
+   if(option.type == 'get'){
+	xhr.open('get',option.url+'?'+str,true);
+	xhr.send();
+    } else 
+    if(option.type == 'post'){
+     xhr.open('post',option.url,true);
+     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+     xhr.send(str);
+    }
+	xhr.onreadystatechange = function (){
+		if(xhr.readyState == 4){
+			if(xhr.status >=200 && xhr.status < 300 || xhr.status == 304){
+				option.success(xhr.responseText)
+				//console.log(xhr.responseText)
+			}else{
+				option.error()
+			}
+		}
+	}
+}
+			
+
+
+	</script>
+</body>
+</html>
